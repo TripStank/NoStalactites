@@ -26,8 +26,8 @@ dependencies {
 	testImplementation group: 'net.runelite', name:'jshell', version: runeLiteVersion
 }
 
-group = 'com.example'
-version = '1.0-SNAPSHOT'
+group = 'com.nostalactites'
+version = '1.0'
 
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
@@ -49,13 +49,22 @@ tasks.register('shadowJar', Jar) {
 		}
 	}
 
+    // Include plugin descriptor at the root of the dev (fat) jar
+    from('runelite-plugin.properties') { into '' }
+
 	exclude 'META-INF/INDEX.LIST'
 	exclude 'META-INF/*.SF'
 	exclude 'META-INF/*.DSA'
 	exclude 'META-INF/*.RSA'
 	exclude '**/module-info.class'
 
-	group = BasePlugin.BUILD_GROUP
-	archiveClassifier.set('shadow')
-	archiveFileName.set("${rootProject.name}-${project.version}-all.jar")
+    group = BasePlugin.BUILD_GROUP
+    archiveClassifier.set('dev')
+    archiveFileName.set("${rootProject.name}-${project.version}-dev.jar")
+}
+
+// Configure the standard thin jar (default artifact for Plugin Hub)
+tasks.named('jar') {
+    // Ensure plugin descriptor is included in thin jar as well
+    from('runelite-plugin.properties') { into '' }
 }
