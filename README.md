@@ -31,6 +31,3 @@ Get rid of those pesky stalactites and other scenery objects by ID#.
 - Hiding is destructive/semi‑permanent within the current scene due to API limits.
 - Hidden objects usually reappear after a scene/region reload (e.g., changing areas or re-logging).
 - Some object types (e.g., certain wall/decorative objects) lack public removal APIs; matches are logged where applicable.
-
-# License
-BSD 2‑Clause. See `LICENSE`.
