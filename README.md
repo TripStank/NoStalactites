@@ -1,2 +1,2 @@
-# Example
-An example greeter plugin
+# No Stalactites
+A simple plugin that hides objects for RuneLite
