@@ -22,10 +22,10 @@ Hide cave stalactites and columns with simple toggles.
 - From source (development):
   - Thin jar (Plugin Hub artifact):
     - `./gradlew.bat clean jar`
-    - Output: `build/libs/NoStalactites-1.0.jar`
+    - Output: `build/libs/NoStalactites-1.1.jar`
   - Dev (runnable) fat jar for local testing:
     - `./gradlew.bat shadowJar`
-    - Run: `java -ea -jar build/libs/NoStalactites-1.0-dev.jar --developer-mode`
+    - Run: `java -ea -jar build/libs/NoStalactites-1.1-dev.jar --developer-mode`
 
 # Limitations
 - Hiding is destructive/semi‑permanent within the current scene due to API limits.

@@ -4,6 +4,18 @@ build
 .project
 .settings/
 .classpath
+.vscode
 nbactions.xml
 nb-configuration.xml
 nbproject/
+
+# Additional local/IDE/build artifacts
+out/
+bin/
+*.iml
+.run/
+.DS_Store
+Thumbs.db
+*.log
+hs_err_pid*
+*.class
