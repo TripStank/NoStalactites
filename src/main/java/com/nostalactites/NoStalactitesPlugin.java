@@ -1,26 +1,19 @@
 package com.nostalactites;
 
 import com.google.inject.Provides;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
-import net.runelite.api.MenuAction;
 import net.runelite.api.Scene;
 import net.runelite.api.Tile;
 import net.runelite.api.WorldView;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GroundObjectSpawned;
-import net.runelite.api.events.MenuEntryAdded;
-import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.DecorativeObjectSpawned;
-import net.runelite.api.KeyCode;
-import net.runelite.api.MenuEntry;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -31,8 +24,8 @@ import net.runelite.client.plugins.PluginDescriptor;
 @Slf4j
 @PluginDescriptor(
         name = "No Stalactites",
-        description = "Hide selected scene objects by ID and optionally show object IDs in right-click menus",
-        tags = {"object", "hide", "ids"}
+        description = "Hide cave stalactites and columns.",
+        tags = {"object", "hide", "cave"}
 )
 public class NoStalactitesPlugin extends Plugin
 {
@@ -44,9 +37,6 @@ public class NoStalactitesPlugin extends Plugin
 
     @Inject
     private NoStalactitesConfig config;
-
-    @Inject
-    private ConfigManager configManager;
 
     private final Set<Integer> hiddenIds = new HashSet<>();
 
@@ -82,106 +72,6 @@ public class NoStalactitesPlugin extends Plugin
         }
         rebuildHiddenIds();
         clientThread.invoke(this::applyHidingToScene);
-    }
-
-    @Subscribe
-    public void onMenuEntryAdded(MenuEntryAdded event)
-    {
-        if (!config.showObjectIds())
-        {
-            return;
-        }
-
-        final int typeId = event.getType();
-        final MenuAction action = MenuAction.of(typeId);
-        if (action == MenuAction.EXAMINE_OBJECT ||
-            action == MenuAction.GAME_OBJECT_FIRST_OPTION ||
-            action == MenuAction.GAME_OBJECT_SECOND_OPTION ||
-            action == MenuAction.GAME_OBJECT_THIRD_OPTION ||
-            action == MenuAction.GAME_OBJECT_FOURTH_OPTION ||
-            action == MenuAction.GAME_OBJECT_FIFTH_OPTION)
-        {
-            final int objectId = event.getIdentifier();
-            // Append id to the target preserving any color tags
-            final String target = event.getTarget();
-            event.getMenuEntry().setTarget(target + " <col=7f7f7f>(id: " + objectId + ")</col>");
-        }
-    }
-
-    @Subscribe
-    public void onMenuOpened(MenuOpened event)
-    {
-        // Only show helper when Shift is held and the setting is enabled
-        if (!config.showObjectIds() || !client.isKeyPressed(KeyCode.KC_SHIFT))
-        {
-            return;
-        }
-
-        final MenuEntry[] entries = event.getMenuEntries();
-        if (entries == null || entries.length == 0)
-        {
-            return;
-        }
-
-        // Find an object-related menu entry to extract the object id
-        Integer objectId = null;
-        String target = null;
-        for (int i = entries.length - 1; i >= 0; i--)
-        {
-            final MenuAction action = entries[i].getType();
-            if (action == MenuAction.EXAMINE_OBJECT ||
-                action == MenuAction.GAME_OBJECT_FIRST_OPTION ||
-                action == MenuAction.GAME_OBJECT_SECOND_OPTION ||
-                action == MenuAction.GAME_OBJECT_THIRD_OPTION ||
-                action == MenuAction.GAME_OBJECT_FOURTH_OPTION ||
-                action == MenuAction.GAME_OBJECT_FIFTH_OPTION)
-            {
-                objectId = entries[i].getIdentifier();
-                target = entries[i].getTarget();
-                break;
-            }
-        }
-
-        if (objectId == null)
-        {
-            return;
-        }
-
-        final int idToAdd = objectId;
-        final String tgt = target == null ? "" : target;
-
-        // Inject our custom menu entry at the top via client API
-        client.createMenuEntry(0)
-            .setOption("Add to hide list")
-            .setTarget(tgt)
-            .setType(MenuAction.RUNELITE)
-            .onClick(me -> {
-                // Append to config set
-                String raw = config.hiddenObjectIds();
-                Set<Integer> ids = new HashSet<>();
-                if (raw != null && !raw.trim().isEmpty())
-                {
-                    ids.addAll(Arrays.stream(raw.split(","))
-                        .map(String::trim)
-                        .filter(s -> !s.isEmpty())
-                        .map(s -> {
-                            try { return Integer.parseInt(s); } catch (NumberFormatException ex) { return null; }
-                        })
-                        .filter(v -> v != null)
-                        .collect(Collectors.toSet()));
-                }
-                ids.add(idToAdd);
-
-                String updated = ids.stream()
-                    .map(String::valueOf)
-                    .collect(Collectors.joining(","));
-
-                configManager.setConfiguration("nostalactites", "hiddenObjectIds", updated);
-
-                // Rebuild and reapply hiding immediately
-                rebuildHiddenIds();
-                clientThread.invoke(this::applyHidingToScene);
-            });
     }
 
     @Subscribe
@@ -264,20 +154,20 @@ public class NoStalactitesPlugin extends Plugin
     private void rebuildHiddenIds()
     {
         hiddenIds.clear();
-        final String raw = config.hiddenObjectIds();
-        if (raw == null || raw.trim().isEmpty())
+        // Stalactites: 12577, 11187, 11189
+        if (config.hideStalactites())
         {
-            return;
+            hiddenIds.add(12577);
+            hiddenIds.add(11187);
+            hiddenIds.add(11189);
         }
-        Set<Integer> parsed = Arrays.stream(raw.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .map(s -> {
-                    try { return Integer.parseInt(s); } catch (NumberFormatException ex) { return null; }
-                })
-                .filter(v -> v != null)
-                .collect(Collectors.toSet());
-        hiddenIds.addAll(parsed);
+        // Columns: 11184, 11185, 11186
+        if (config.hideColumns())
+        {
+            hiddenIds.add(11184);
+            hiddenIds.add(11185);
+            hiddenIds.add(11186);
+        }
     }
 
     private void applyHidingToScene()

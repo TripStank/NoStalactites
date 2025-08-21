@@ -7,25 +7,23 @@ import net.runelite.client.config.ConfigItem;
 @ConfigGroup("nostalactites")
 public interface NoStalactitesConfig extends Config
 {
-    // No global enable/disable toggle; plugin always applies configured hidden IDs
-
     @ConfigItem(
-        keyName = "showObjectIds",
-        name = "Shift Right-Click helper",
-        description = "Hold Shift and right-click an object to show 'Add to hide list'. When enabled, also appends object IDs to right-click menus for convenience."
+        keyName = "hideStalactites",
+        name = "Hide stalactites",
+        description = "Hide stalactite cave objects (IDs: 12577, 11187, 11189)."
     )
-    default boolean showObjectIds()
+    default boolean hideStalactites()
     {
-        return false;
+        return true;
     }
 
     @ConfigItem(
-        keyName = "hiddenObjectIds",
-        name = "Hidden object IDs",
-        description = "Comma-separated list of object IDs to hide (e.g., 1234,5678). Defaults include stalactites (12577)."
+        keyName = "hideColumns",
+        name = "Hide cave columns",
+        description = "Hide cave column objects (IDs: 11184, 11185, 11186)."
     )
-    default String hiddenObjectIds()
+    default boolean hideColumns()
     {
-        return "12577";
+        return false;
     }
 }
