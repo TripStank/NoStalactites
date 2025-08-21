@@ -1,4 +1,6 @@
 # No Stalactites!
+![No Stalactites](https://github.com/user-attachments/assets/9214a84b-e1f5-4005-9c07-effd7f5a353d)
+
 Hide cave stalactites and columns with simple toggles.
 
 # Features
