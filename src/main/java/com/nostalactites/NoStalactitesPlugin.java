@@ -117,12 +117,11 @@ public class NoStalactitesPlugin extends Plugin
      * Cleans up any resources and restores the game state.
      */
     @Override
-    protected void shutDown()
+    protected void shutDown() throws Exception
     {
-        hiddenIds.clear();
-        columnAnchors.clear();
-        clearStalagmiteObjects();
-        
+        // Clear any hidden objects when the plugin is disabled
+        modelCache.clear();
+
         // Force scene reload to restore hidden objects
         clientThread.invoke(() -> {
             if (client.getGameState() == GameState.LOGGED_IN) {
@@ -168,9 +167,7 @@ public class NoStalactitesPlugin extends Plugin
             if (client.getGameState() == GameState.LOGGED_IN) {
                 client.setGameState(GameState.LOADING);
             } else {
-                // If we're not logged in, just apply the changes directly
-                applyHidingToScene();
-                updateStalagmiteObjects();
+                // Do Absolutely Nothing
             }
         });
     }

@@ -29,11 +29,11 @@ A RuneLite plugin that hides cave stalactites and columns, with an option to rep
      ```
      ./gradlew clean jar
      ```
-     Output: `build/libs/NoStalactites-1.2.jar`
+     Output: `build/libs/NoStalactites-1.2.1.jar`
    - Development JAR (for testing):
      ```
      ./gradlew shadowJar
-     java -ea -jar build/libs/NoStalactites-1.2-dev.jar --developer-mode
+     java -ea -jar build/libs/NoStalactites-1.2.1-dev.jar --developer-mode
      ```
 
 ## Known Issues
@@ -42,8 +42,13 @@ A RuneLite plugin that hides cave stalactites and columns, with an option to rep
 - The plugin only affects visual elements and does not modify game mechanics
 
 ## Credits
-- Original concept and implementation by the RuneLite community
+- Original concept by the RuneLite community
 - 3D model replacement functionality inspired by [Xyriella's Immersive Ground Markers](https://github.com/Xyriella/Immersive-Ground-Markers)
 
 ## License
 This project is licensed under the BSD 2-Clause License - see the [LICENSE](LICENSE) file for details.
+
+
+## Generative AI Usage Notice
+This plugin was created with the use of AI code editing tools. 
+The README.md file was generated using AI.
