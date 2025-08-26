@@ -7,8 +7,7 @@ The **No Stalactites** plugin is built using the RuneLite plugin template from G
 - **Object ID Context Menu Toggle:** A configuration toggle (`showObjectIds`) will add object IDs to the right-click context menu of examinable objects. Example:  
   `Examine Tree (ID: 1276)`
 
-- **Hidden Object ID List:** A configuration field (`hiddenObjectIds`) will store a comma-separated list of object IDs. Any objects matching the IDs in this list will not render in RuneLite. Example config:  
-  `1234, 5678, 91011`
+- **Hidden Object ID List:** A configuration field (`hiddenObjectIds`) will store a comma-separated list of object IDs. Any objects matching the IDs in this list will not render in RuneLite.
 
 - **Rendering Control:** The plugin will intercept object spawn and render events (`GameObjectSpawned`, `WallObjectSpawned`, etc.) and suppress rendering for objects whose IDs match the hidden list. This will only affect visuals, leaving interactions and collisions intact.
 

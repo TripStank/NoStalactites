@@ -1,38 +1,49 @@
 # No Stalactites!
-![No Stalactites](https://github.com/user-attachments/assets/9214a84b-e1f5-4005-9c07-effd7f5a353d)
 
-Hide cave stalactites and columns with simple toggles.
+A RuneLite plugin that hides cave stalactites and columns, with an option to replace columns with a stalagmite floor pattern for better visibility.
 
-# Features
-- Hide stalactites and cave columns.
-- Simple on/off toggles. No user-provided IDs.
+## Features
+- Hide stalactites and cave columns
+- Simple on/off toggles - no user-provided IDs needed
+- Optional: Replace hidden columns with decorative stalagmite models
 
-# Usage
-- Open the plugin’s configuration and enable/disable the categories you want hidden.
-  - Hide stalactites (IDs: 12577, 11187, 11189) — default: on
-  - Hide cave columns (IDs: 11184, 11185, 11186) — default: off
+## Usage
+1. Open the RuneLite configuration panel
+2. Navigate to the "No Stalactites" plugin section
+3. Configure the following options:
+   - **Hide Stalactites** (default: on) - Hides stalactite objects (IDs: 12577, 11187, 11189)
+   - **Hide Cave Columns** (default: off) - Hides column objects (IDs: 11184, 11185, 11186)
+   - **Replace with Rocks** (default: off) - Replaces hidden columns with decorative rock models
 
-# Configuration
-- Hide stalactites:
-  - Removes stalactite cave objects.
-- Hide cave columns:
-  - Removes cave column objects.
+## Installation
+### From Plugin Hub (recommended)
+1. Open the RuneLite client
+2. Go to Configuration > Plugin Hub
+3. Search for "No Stalactites"
+4. Click "Install"
 
-# Installation
-- From Plugin Hub (recommended):
-  - Search for "No Stalactites" and install.
-- From source (development):
-  - Thin jar (Plugin Hub artifact):
-    - `./gradlew.bat clean jar`
-    - Output: `build/libs/NoStalactites-1.1.jar`
-  - Dev (runnable) fat jar for local testing:
-    - `./gradlew.bat shadowJar`
-    - Run: `java -ea -jar build/libs/NoStalactites-1.1-dev.jar --developer-mode`
+### From Source
+1. Clone the repository
+2. Build the plugin:
+   - Thin JAR (for Plugin Hub):
+     ```
+     ./gradlew clean jar
+     ```
+     Output: `build/libs/NoStalactites-1.2.jar`
+   - Development JAR (for testing):
+     ```
+     ./gradlew shadowJar
+     java -ea -jar build/libs/NoStalactites-1.2-dev.jar --developer-mode
+     ```
 
-# Limitations
-- Hiding is destructive/semi‑permanent within the current scene due to API limits.
-- Hidden objects usually reappear after a scene/region reload (e.g., changing areas or re-logging).
-- Some object types (e.g., certain wall/decorative objects) lack public removal APIs; matches are logged where applicable.
+## Known Issues
+- Hidden objects may reappear after changing areas or relogging
+- Some object types cannot be removed due to RuneScape API limitations
+- The plugin only affects visual elements and does not modify game mechanics
 
-# License
-BSD 2‑Clause. See `LICENSE`.
+## Credits
+- Original concept and implementation by the RuneLite community
+- 3D model replacement functionality inspired by [Xyriella's Immersive Ground Markers](https://github.com/Xyriella/Immersive-Ground-Markers)
+
+## License
+This project is licensed under the BSD 2-Clause License - see the [LICENSE](LICENSE) file for details.

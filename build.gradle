@@ -27,7 +27,7 @@ dependencies {
 }
 
 group = 'com.nostalactites'
-version = '1.1'
+version = '1.2'
 
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
@@ -61,10 +61,4 @@ tasks.register('shadowJar', Jar) {
     group = BasePlugin.BUILD_GROUP
     archiveClassifier.set('dev')
     archiveFileName.set("${rootProject.name}-${project.version}-dev.jar")
-}
-
-// Configure the standard thin jar (default artifact for Plugin Hub)
-tasks.named('jar') {
-    // Ensure plugin descriptor is included in thin jar as well
-    from('runelite-plugin.properties') { into '' }
 }
