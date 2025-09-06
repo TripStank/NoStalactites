@@ -117,13 +117,35 @@ public class NoStalactitesPlugin extends Plugin
      * Cleans up any resources and restores the game state.
      */
     @Override
-    protected void shutDown() throws Exception
+    protected void shutDown()
     {
-        // Clear any hidden objects when the plugin is disabled
-        modelCache.clear();
-
-        // Force scene reload to restore hidden objects
+        log.info("No Stalactites stopping...");
+        
+        // Clear all custom objects and caches on the client thread
         clientThread.invoke(() -> {
+            // First despawn all stalagmite objects
+            for (List<RuneLiteObject> objects : stalagmiteObjects.values()) {
+                for (RuneLiteObject obj : objects) {
+                    try {
+                        obj.setActive(false);
+                    } catch (Exception e) {
+                        log.debug("Error deactivating object: {}", e.getMessage());
+                    }
+                }
+            }
+            stalagmiteObjects.clear();
+            
+            // Clear model cache
+            modelCache.clear();
+            
+            // Clear tracking collections
+            hiddenIds.clear();
+            columnAnchors.clear();
+            
+            // Reset rotation index
+            rotationIndex = 0;
+            
+            // Force scene reload to restore hidden objects
             if (client.getGameState() == GameState.LOGGED_IN) {
                 client.setGameState(GameState.LOADING);
             }
@@ -158,16 +180,25 @@ public class NoStalactitesPlugin extends Plugin
             return;
         }
 
+        // Rebuild the set of hidden IDs based on current config
         rebuildHiddenIds();
-        clientThread.invoke(() -> {
-            columnAnchors.clear();
-            clearStalagmiteObjects();
-            
-            // Always reload the scene when config changes
-            if (client.getGameState() == GameState.LOGGED_IN) {
-                client.setGameState(GameState.LOADING);
-            } else {
-                // Do Absolutely Nothing
+        
+        // Clear existing stalagmite objects when config changes
+        clearStalagmiteObjects();
+        
+        // Force a scene reload to apply changes
+        clientThread.invokeLater(() -> {
+            try {
+                if (client.getGameState() == GameState.LOGGED_IN) {
+                    client.setGameState(GameState.LOADING);
+                } else {
+                    applyHidingToScene();
+                    if (config.hideColumns() && config.replaceWithRocks()) {
+                        updateStalagmiteObjects();
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error updating objects: {}", e.getMessage(), e);
             }
         });
     }
@@ -419,38 +450,17 @@ public class NoStalactitesPlugin extends Plugin
         }
     }
 
-    private void clearStalagmiteObjects()
-    {
-        for (List<RuneLiteObject> list : stalagmiteObjects.values())
-        {
-            for (RuneLiteObject obj : list)
-            {
-                try
-                {
-                    obj.setActive(false);
-                }
-                catch (Exception ignored)
-                {
-                }
-            }
-        }
-        stalagmiteObjects.clear();
-    }
-    
     private void updateStalagmiteObjects()
     {
-        // Clear any existing stalagmite objects
-        clearStalagmiteObjects();
-        
-        // Reset rotation index when starting new placement
-        rotationIndex = 0;
-        
-        if (!config.hideColumns() || !config.replaceWithRocks()) {
+        if (!config.replaceWithRocks() || !config.hideColumns()) {
             return;
         }
-
+        
         // Get the model ID from config
         int modelId = NoStalactitesConfig.ROCK_FORMATION_ID;
+        
+        // Clear existing objects first
+        clearStalagmiteObjects();
         
         // Load the model if not already cached
         Model model = modelCache.get(modelId);
@@ -467,6 +477,37 @@ public class NoStalactitesPlugin extends Plugin
         // Spawn models at each anchor
         for (WorldPoint anchor : columnAnchors) {
             spawnAtAnchor(anchor, modelId);
+        }
+    }
+    
+    private void clearStalagmiteObjects()
+    {
+        // This method is now a wrapper that ensures we're on the client thread
+        if (client.isClientThread()) {
+            clearStalagmiteObjectsInternal();
+        } else {
+            clientThread.invoke(this::clearStalagmiteObjectsInternal);
+        }
+    }
+    
+    private void clearStalagmiteObjectsInternal()
+    {
+        try {
+            for (List<RuneLiteObject> objects : stalagmiteObjects.values()) {
+                for (RuneLiteObject obj : objects) {
+                    try {
+                        if (obj != null) {
+                            obj.setActive(false);
+                        }
+                    } catch (Exception e) {
+                        log.debug("Error deactivating object: {}", e.getMessage());
+                    }
+                }
+            }
+            stalagmiteObjects.clear();
+            modelCache.clear();
+        } catch (Exception e) {
+            log.error("Error clearing stalagmite objects: {}", e.getMessage(), e);
         }
     }
 
